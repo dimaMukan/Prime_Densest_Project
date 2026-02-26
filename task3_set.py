@@ -1,76 +1,62 @@
-import time
 import math
 
-
-def is_prime(number: int) -> bool:
-    """Return True if number is prime using trial division up to sqrt(number)."""
-    if number <= 1:
+def is_prime(n):
+    # Basic prime check (trial division up to sqrt(n))
+    if n <= 1:
         return False
-    if number == 2:
+    if n == 2:
         return True
-    if number % 2 == 0:
+    if n % 2 == 0:
         return False
 
-    limit = int(math.isqrt(number))
-    for i in range(3, limit + 1, 2):
-        if number % i == 0:
+    limit = int(math.isqrt(n))
+    for d in range(3, limit + 1, 2):
+        if n % d == 0:
             return False
     return True
 
+def format_output(primes_sorted):
+    # If 6 or more primes -> show first 3 and last 3, otherwise show all
+    if len(primes_sorted) >= 6:
+        primes_sorted = primes_sorted[:3] + primes_sorted[-3:]
+    return ", ".join(map(str, primes_sorted))
 
-def prime_dense_window_set(S: str, W: int, N: int) -> str:
-    """
-    Find the window of length W with the maximum count of unique primes
-    formed by all substrings inside the window (numbers must be < N).
 
-    Task 3 change vs Task 2: use a SET to store unique primes (fast membership).
-    """
-    if not isinstance(S, str) or not S.isdigit():
+def prime_dense_window_set(S, W, N):
+    # Basic validation
+    if not S.isdigit():
         return "0, 0: Invalid input"
     if W <= 0 or W > len(S) or N <= 0:
         return "0, 0: Invalid input"
 
-    max_count = 0
     best_index = 0
-    best_primes_set: set[int] = set()
+    max_count = 0
+    best_primes_set = set()
 
-    # Slide the window
+    # Sliding window
     for i in range(len(S) - W + 1):
-        current_primes: set[int] = set()  # key change: set instead of list
+        current_primes_set = set()  # Task 3 key change
 
-        # Generate all substrings inside the window
+        # All substrings inside the window
         for start in range(i, i + W):
             for end in range(start, i + W):
                 number = int(S[start:end + 1])
-                if number < N and is_prime(number):
-                    current_primes.add(number)
 
-        # Update maximum (ties keep the earliest index automatically)
-        if len(current_primes) > max_count:
-            max_count = len(current_primes)
+                if number < N and is_prime(number):
+                    current_primes_set.add(number)
+
+        # Update best window (ties keep earliest index automatically)
+        if len(current_primes_set) > max_count:
+            max_count = len(current_primes_set)
             best_index = i
-            best_primes_set = current_primes
+            best_primes_set = current_primes_set
 
     if max_count == 0:
         return "0, 0: No primes found"
 
-    best_primes = sorted(best_primes_set)
-
-    # Format output: show first 3 and last 3 if 6+ primes, otherwise show all
-    if len(best_primes) >= 6:
-        display_primes = best_primes[:3] + best_primes[-3:]
-    else:
-        display_primes = best_primes
-
-    return f"{best_index}, {max_count}: " + ", ".join(map(str, display_primes))
+    best_primes_sorted = sorted(best_primes_set)
+    return f"{best_index}, {max_count}: " + format_output(best_primes_sorted)
 
 
 if __name__ == "__main__":
-    # Example manual test
-    S = "12319"
-    W = 3
-    N = 50
-
-    t0 = time.time()
-    print("Output:", prime_dense_window_set(S, W, N))
-    print("Time taken:", time.time() - t0, "seconds")
+    print(prime_dense_window_set("12319", 3, 50))
