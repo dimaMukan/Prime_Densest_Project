@@ -1,6 +1,7 @@
 import time
 from task2_list import prime_dense_window
 from task3_set import prime_dense_window_set
+from task_4 import prime_dense_window_optimised
 
 PI_100 = "31415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679"
 
@@ -32,10 +33,15 @@ def timed_run(func, S, W, N, limit_seconds=60):
 if __name__ == "__main__":
     tests = make_tests()
 
-    print("Case | Description | Task2 | Task3 | Outputs match")
-    print("-" * 70)
+    print("Case | Description\t\t\t | Task2  | Task3  | Task4  | Outputs match")
+    print("-" * 85)
 
     for idx, (S, W, N, desc) in enumerate(tests, 1):
         out2, t2 = timed_run(prime_dense_window, S, W, N)
         out3, t3 = timed_run(prime_dense_window_set, S, W, N)
-        print(f"{idx:>4} | {desc:<20} | {t2:>6} | {t3:>6} | {out2 == out3}")
+        out4, t4 = timed_run(prime_dense_window_optimised, S, W, N)
+
+        outputs_match = (out2 == out3 == out4)
+
+
+        print(f"{idx:>4} | {desc:<18} | {t2:>6} | {t3:>6} | {t4:>6} | {outputs_match}")
